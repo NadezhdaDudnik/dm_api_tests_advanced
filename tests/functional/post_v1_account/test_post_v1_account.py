@@ -14,7 +14,7 @@ def test_post_v1_account():
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
 
     fake = Faker("en_US")
-    login = fake.first_name_female()
+    login = fake.first_name_female() + '12345'
     password = '123456789'
     email = f'{login}@mail.ru'
 
