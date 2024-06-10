@@ -3,13 +3,16 @@ from json import loads
 from api_mailhog.apis.mailhog_api import MailhogApi
 from dm_api_account_adv.apis.account_api import AccountApi
 
+from faker import Faker
+
 
 def test_put_v1_account_token():
     # Регистрация пользователя
     account_api = AccountApi(host='http://5.63.153.31:5051')
     mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
 
-    login = 'Nadin53'
+    fake = Faker("en_US")
+    login = fake.first_name_female()
     password = '123456789'
     email = f'{login}@mail.ru'
 
