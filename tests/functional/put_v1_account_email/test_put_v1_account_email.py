@@ -2,8 +2,8 @@ from json import loads
 
 from faker import Faker
 
-from dm_api_account_adv.apis.account_api import AccountApi
-from dm_api_account_adv.apis.login_api import LoginApi
+from dm_api_account.apis.account_api import AccountApi
+from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
 
 
