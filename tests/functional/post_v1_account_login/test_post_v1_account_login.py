@@ -12,9 +12,11 @@ structlog.configure(
         structlog.processors.JSONRenderer(
             indent=4, ensure_ascii=True
             # sort_keys=True
-            )
+        )
     ]
 )
+
+
 def test_post_v1_account_login():
     # Регистрация пользователя
     account_api = AccountApi(host='http://5.63.153.31:5051')
