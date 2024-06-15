@@ -3,11 +3,11 @@ from json import loads
 import structlog
 from faker import Faker
 
-from dm_api_account.apis.account_api import AccountApi
-from dm_api_account.apis.login_api import LoginApi
-from api_mailhog.apis.mailhog_api import MailhogApi
+from helpers.account_helper import AccountHelper
 from restclient.configuration import Configuration as MailhogConfiguration
 from restclient.configuration import Configuration as DmApiConfiguration
+from services.dm_api_account import DMApiAccount
+from services.api_mailhog import MailHogApi
 
 structlog.configure(
     processors=[
@@ -23,125 +23,30 @@ def test_put_v1_account_email():
     # Регистрация пользователя
     mailhog_configuration = MailhogConfiguration(host='http://5.63.153.31:5025')
     dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
-    account_api = AccountApi(dm_api_configuration)
-    login_api = LoginApi(dm_api_configuration)
-    mailhog_api = MailhogApi(mailhog_configuration)
+    account = DMApiAccount(dm_api_configuration)
+    mailhog = MailHogApi(mailhog_configuration)
+
+    account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
     fake = Faker("en_US")
     login = fake.first_name_female() + '12345'
     password = '123456789'
     email = f'{login}@mail.ru'
-    change_email = f'{login}01@mail.ru'
-
-    json_data = {
-        'login': login,
-        'email': email,
-        'password': password,
-    }
-
-    response = account_api.post_v1_account(json_data=json_data)
-    assert response.status_code == 201, f"Пользователь не создан {response.json()}"
-
-    # Получение письма из почтового сервера
-
-    response = mailhog_api.get_api_v2_messages()
-    assert response.status_code == 200, "Письма не получены"
-
-    # Получение активационного токена
-
-    token = get_activation_token_by_login(login, response)
-    assert token is not None, f"Токен для пользователя {login} не получен"
-
-    # Активация пользователя
-
-    response = account_api.put_v1_account_token(token=token)
-    assert response.status_code == 200, "Пользователь не активирован"
+    change_email = f'{login}@mail.ru'
+    account_helper.register_new_user(login=login, password=password, email=email)
 
     # Авторизация пользователя
-
-    json_data = {
-        'login': login,
-        'password': password,
-        'rememberMe': True,
-    }
-
-    response = login_api.post_v1_account_login(json_data=json_data)
-    assert response.status_code == 200, "Пользователь не авторизован"
+    account_helper.user_login(login=login, password=password)
 
     # Смена пароля
 
-    json_data = {
-        'login': login,
-        'email': change_email,
-        'password': password,
-    }
-    response = account_api.put_v1_account_change_email(json_data=json_data)
-    assert response.status_code == 200, "Адрес электронной почты пользователя не изменен"
+    account_helper.change_email(login=login, password=password, email=change_email)
 
     # Повторная Авторизация пользователя после смены почты и без активации токена
 
-    json_data = {
-        'login': login,
-        'password': password,
-        'rememberMe': True,
-    }
+    account_helper.user_login_403(login=login, password=password)
 
-    response = login_api.post_v1_account_login(json_data=json_data)
-    assert response.status_code == 403, "Пользователь авторизован ошибочно"
-
-    # Получение письма из почтового сервера после смены адреса электронной почты
-
-    response = mailhog_api.get_api_v2_messages()
-    assert response.status_code == 200, "Письма не получены"
-
-    # Получение активационного токена
-
-    token = get_activation_token_by_login_after_change_email(change_email, response)
-    assert token is not None, f"Токен для пользователя c {change_email} не получен"
-
-    # Активация пользователя
-
-    response = account_api.put_v1_account_token(token=token)
-    assert response.status_code == 200, "Пользователь не активирован"
+    account_helper.activation_user_after_change_email(email=change_email)
 
     # Повторная Авторизация пользователя
-
-    json_data = {
-        'login': login,
-        'password': password,
-        'rememberMe': True,
-    }
-
-    response = login_api.post_v1_account_login(json_data=json_data)
-    assert response.status_code == 200, "Пользователь не авторизован"
-
-
-def get_activation_token_by_login(
-        login,
-        response
-):
-    token = None
-    for item in response.json()['items']:
-        user_data = loads(item['Content']['Body'])
-        user_login = user_data['Login']
-        if user_login == login:
-            print(user_login)
-            token = user_data['ConfirmationLinkUrl'].split('/')[-1]
-            print(token)
-    return token
-
-
-def get_activation_token_by_login_after_change_email(
-        change_email,
-        response
-):
-    token = None
-    for item in response.json()['items']:
-        user_data = loads(item['Content']['Body'])
-        user_email = item['Content']['Headers']['To'][0]
-
-        if user_email == change_email:
-            print(user_email)
-            token = user_data['ConfirmationLinkUrl'].split('/')[-1]
-            print(token)
-    return token
+    account_helper.user_login(login=login, password=password)
