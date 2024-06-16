@@ -32,7 +32,7 @@ def test_put_v1_account_email():
     login = fake.first_name_female() + '12345'
     password = '123456789'
     email = f'{login}@mail.ru'
-    change_email = f'{login}@mail.ru'
+    change_email = f'{login}6@mail.ru'
     account_helper.register_new_user(login=login, password=password, email=email)
 
     # Авторизация пользователя
