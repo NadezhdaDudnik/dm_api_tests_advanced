@@ -29,7 +29,8 @@ def test_post_v1_account_login():
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
     fake = Faker("en_US")
-    login = fake.first_name_female() + '12378'
+
+    login = fake.first_name_female() + '127845'
     password = '123456789'
     email = f'{login}23@mail.ru'
     account_helper.register_new_user(login=login, password=password, email=email)
