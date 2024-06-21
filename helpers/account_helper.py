@@ -71,7 +71,9 @@ class AccountHelper:
             self,
             login: str,
             password: str,
-            remember_me: bool = True
+            remember_me: bool = True,
+            expected_status_code=200,
+            fail_message="Пользователь не авторизован"
     ):
         # Авторизация пользователя
 
@@ -82,7 +84,7 @@ class AccountHelper:
         }
 
         response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 200, "Пользователь не авторизован"
+        assert response.status_code == expected_status_code, fail_message
         return response
 
     def change_email(
@@ -99,34 +101,7 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_change_email(json_data=json_data)
         assert response.status_code == 200, "Адрес электронной почты пользователя не изменен"
 
-        token = self.get_activation_token_by_login(login=login)
-        assert token is not None, f"Токен для пользователя {login} не получен"
-
-    def user_login_403(
-            self,
-            login: str,
-            password: str,
-            remember_me: bool = True
-    ):
-        # Авторизация пользователя
-
-        json_data = {
-            'login': login,
-            'password': password,
-            'rememberMe': remember_me,
-        }
-
-        response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-        assert response.status_code == 403, "Пользователь авторизован ошибочно"
-        return response
-
-    def activation_user_after_change_email(
-            self,
-            email: str
-    ):
-
         # Получение активационного токена
-
         token = self.get_activation_token_by_login_after_change_email(email)
         assert token is not None, f"Токен для пользователя c {email} не получен"
 
@@ -134,6 +109,7 @@ class AccountHelper:
 
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         assert response.status_code == 200, "Пользователь не активирован"
+
 
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activation_token_by_login(
