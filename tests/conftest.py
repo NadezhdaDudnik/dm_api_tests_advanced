@@ -43,7 +43,7 @@ def auth_account_helper(
     account = DMApiAccount(dm_api_configuration)
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
     account_helper.auth_client(
-        login="Jordan22_06_2024_11_05_51",
+        login="Alicia22_06_2024_11_05_51",
         password="123456789"
     )
     return account_helper
@@ -65,8 +65,10 @@ def prepare_user():
     fake = Faker("en_US")
     login = fake.first_name_female() + f'{data}'
     password = '123456789'
+    change_password = '2355227413'
     email = f'{login}@mail.ru'
     change_email = f'{login}7@mail.ru'
-    User = namedtuple("User", ["login", "password", "email", "change_email"])
-    user = User(login=login, password=password, email=email, change_email=change_email)
+
+    User = namedtuple("User", ["login", "password", "email", "change_email", "change_password"])
+    user = User(login=login, password=password, email=email, change_email=change_email, change_password=change_password)
     return user
