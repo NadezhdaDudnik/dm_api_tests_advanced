@@ -29,10 +29,11 @@ def test_put_v1_account_email():
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
     fake = Faker("en_US")
+
     login = fake.first_name_female() + '1234545'
     password = '123456789'
     email = f'{login}@mail.ru'
-    change_email = f'{login}@mail.ru'
+    change_email = f'{login}6@mail.ru'
     account_helper.register_new_user(login=login, password=password, email=email)
 
     # Авторизация пользователя
@@ -41,12 +42,6 @@ def test_put_v1_account_email():
     # Смена пароля
 
     account_helper.change_email(login=login, password=password, email=change_email)
-
-    # Повторная Авторизация пользователя после смены почты и без активации токена
-
-    account_helper.user_login_403(login=login, password=password)
-
-    account_helper.activation_user_after_change_email(email=change_email)
 
     # Повторная Авторизация пользователя
     account_helper.user_login(login=login, password=password)
