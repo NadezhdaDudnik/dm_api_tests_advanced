@@ -9,6 +9,7 @@ def test_put_v1_account_email(
     change_email = prepare_user.change_email
 
     # Регистрация пользователя
+
     account_helper.register_new_user(login=login, password=password, email=email)
 
     # Авторизация пользователя

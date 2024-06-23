@@ -8,6 +8,7 @@ def test_post_v1_account_login(
     email = prepare_user.email
 
     # Регистрация пользователя
+
     account_helper.register_new_user(login=login, password=password, email=email)
 
     # Авторизация пользователя
