@@ -174,7 +174,7 @@ class AccountHelper:
             login,
     ):
         token = None
-        # Получение письма из почтового сервера
+
         response = self.mailhog.mailhog_api.get_api_v2_messages()
         for item in response.json()['items']:
             user_data = loads(item['Content']['Body'])
