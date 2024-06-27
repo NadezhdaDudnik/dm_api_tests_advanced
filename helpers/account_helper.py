@@ -71,16 +71,16 @@ class AccountHelper:
             'email': email,
             'password': password,
         }
-        # Регистрация пользователя
+
         response = self.dm_account_api.account_api.post_v1_account(json_data=json_data)
         assert response.status_code == 201, f"Пользователь не создан {response.json()}"
 
-        # Получение активационного токена
+
         #token = self.get_activation_token_by_login(login=login)
         token = self.get_token(login=login, token_type="activation")
         assert token is not None, f"Токен для пользователя {login} не получен"
 
-        # Активация пользователя
+
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         assert response.status_code == 200, "Пользователь не активирован"
         return response
@@ -93,7 +93,6 @@ class AccountHelper:
             expected_status_code=200,
             fail_message="Пользователь не авторизован"
     ):
-        # Авторизация пользователя
 
         json_data = {
             'login': login,
@@ -111,23 +110,18 @@ class AccountHelper:
             password: str,
             email: str
     ):
-        token = self.user_login(login=login, password=password)
+
         json_data = {
             'login': login,
             'email': email,
             'password': password,
         }
-        headers = {
-            "x-dm-auth-token": token.headers["x-dm-auth-token"]
-        }
-        response = self.dm_account_api.account_api.put_v1_account_change_email(json_data=json_data, headers=headers)
+
+        response = self.dm_account_api.account_api.put_v1_account_change_email(json_data=json_data)
         assert response.status_code == 200, "Адрес электронной почты пользователя не изменен"
 
-        # Получение активационного токена
         token = self.get_activation_token_by_login_after_change_email(email)
         assert token is not None, f"Токен для пользователя c {email} не получен"
-
-        # Активация пользователя
 
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         assert response.status_code == 200, "Пользователь не активирован"
@@ -152,7 +146,7 @@ class AccountHelper:
             json_data=json_data,
             headers=headers
         )
-        # Получение авторизационного токена
+
         token = self.get_token(login=login, token_type="reset")
         assert token is not None, f"Авторизационный токен для пользователя не получен"
 
@@ -166,29 +160,12 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_change_password(json_data=json_data1)
         assert response.status_code == 200, "Пароль пользователя не изменен"
 
-    def logout_user(self,
-            login: str,
-            password: str
-        ):
-        token = self.user_login(login=login, password=password)
-
-        headers = {
-        "x-dm-auth-token": token.headers["x-dm-auth-token"]
-        }
-        response = self.dm_account_api.account_api.delete_v1_account_login(headers=headers)
+    def logout_user(self):
+        response = self.dm_account_api.account_api.delete_v1_account_login()
         assert response.status_code == 204, "Пользователь не разлогинен"
 
-    def logout_user_all_devices(
-            self,
-            login: str,
-            password: str
-            ):
-        token = self.user_login(login=login, password=password)
-
-        headers = {
-            "x-dm-auth-token": token.headers["x-dm-auth-token"]
-        }
-        response = self.dm_account_api.account_api.delete_v1_account_login_all(headers=headers)
+    def logout_user_all_devices(self):
+        response = self.dm_account_api.account_api.delete_v1_account_login_all()
         assert response.status_code == 204, "Пользователь не разлогинен со всех устройств"
 
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)

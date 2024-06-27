@@ -8,5 +8,4 @@ def test_put_v1_account_token(
     password = prepare_user.password
     email = prepare_user.email
 
-    # Регистрация пользователя
     account_helper.register_new_user(login=login, password=password, email=email)
