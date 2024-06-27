@@ -14,4 +14,3 @@ def test_put_v1_account_email(
     account_helper.user_login(login=login, password=password)
 
     auth_account_helper.change_email(login=login, password=password, email=change_email)
-

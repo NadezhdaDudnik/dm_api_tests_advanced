@@ -75,9 +75,10 @@ class AccountHelper:
         response = self.dm_account_api.account_api.post_v1_account(json_data=json_data)
         assert response.status_code == 201, f"Пользователь не создан {response.json()}"
 
-
         #token = self.get_activation_token_by_login(login=login)
         token = self.get_token(login=login, token_type="activation")
+    
+        token = self.get_activation_token_by_login(login=login)
         assert token is not None, f"Токен для пользователя {login} не получен"
 
 
@@ -160,6 +161,9 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_change_password(json_data=json_data1)
         assert response.status_code == 200, "Пароль пользователя не изменен"
 
+        token = self.get_activation_token_by_login_after_change_email(email)
+        assert token is not None, f"Токен для пользователя c {email} не получен"
+
     def logout_user(self):
         response = self.dm_account_api.account_api.delete_v1_account_login()
         assert response.status_code == 204, "Пользователь не разлогинен"
@@ -174,7 +178,6 @@ class AccountHelper:
             login,
     ):
         token = None
-
         response = self.mailhog.mailhog_api.get_api_v2_messages()
         for item in response.json()['items']:
             user_data = loads(item['Content']['Body'])
