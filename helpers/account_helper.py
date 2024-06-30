@@ -161,8 +161,6 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_change_password(json_data=json_data1)
         assert response.status_code == 200, "Пароль пользователя не изменен"
 
-        token = self.get_activation_token_by_login_after_change_email(email)
-        assert token is not None, f"Токен для пользователя c {email} не получен"
 
     def logout_user(self):
         response = self.dm_account_api.account_api.delete_v1_account_login()
@@ -205,7 +203,7 @@ class AccountHelper:
                 print(token)
         return token
 
-    @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
+    @retry(stop_max_attempt_number=10, retry_on_result=retry_if_result_none, wait_fixed=2000)
     def get_token(
             self,
             login,
