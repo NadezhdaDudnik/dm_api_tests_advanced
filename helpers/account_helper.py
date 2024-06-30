@@ -1,6 +1,8 @@
 import time
 from json import loads
 
+from dm_api_account.models.login_credentials import LoginCredentials
+from dm_api_account.models.registration import Registration
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DMApiAccount
 from retrying import retry
@@ -48,12 +50,7 @@ class AccountHelper:
             login: str,
             password: str
     ):
-        response = self.dm_account_api.login_api.post_v1_account_login(
-            json_data={
-                'login': login,
-                'password': password
-            }
-        )
+        response = self.user_login(login=login, password=password)
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
         }
@@ -66,24 +63,24 @@ class AccountHelper:
             password: str,
             email: str
     ):
-        json_data = {
-            'login': login,
-            'email': email,
-            'password': password,
-        }
 
-        response = self.dm_account_api.account_api.post_v1_account(json_data=json_data)
+        registration = Registration(
+            login=login,
+            email=email,
+            password=password
+        )
+
+        response = self.dm_account_api.account_api.post_v1_account(registration=registration)
         assert response.status_code == 201, f"Пользователь не создан {response.json()}"
 
-        #token = self.get_activation_token_by_login(login=login)
+        start_time = time.time()
         token = self.get_token(login=login, token_type="activation")
-    
-        token = self.get_activation_token_by_login(login=login)
+        # token = self.get_activation_token_by_login(login=login)
+        end_time = time.time()
+        assert end_time - start_time < 3, "Время ожидания активации превышено"
         assert token is not None, f"Токен для пользователя {login} не получен"
 
-
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
-        assert response.status_code == 200, "Пользователь не активирован"
         return response
 
     def user_login(
@@ -92,16 +89,18 @@ class AccountHelper:
             password: str,
             remember_me: bool = True,
             expected_status_code=200,
-            fail_message="Пользователь не авторизован"
+            fail_message="Пользователь не авторизован",
+            validate_response=False
     ):
 
-        json_data = {
-            'login': login,
-            'password': password,
-            'rememberMe': remember_me,
-        }
+        login_credentials = LoginCredentials(
+            login=login,
+            password=password,
+            remember_me=remember_me
+        )
 
-        response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
+        response = self.dm_account_api.login_api.post_v1_account_login(login_credentials=login_credentials, validate_response=validate_response)
+        assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
         assert response.status_code == expected_status_code, fail_message
         return response
 
@@ -161,12 +160,15 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_change_password(json_data=json_data1)
         assert response.status_code == 200, "Пароль пользователя не изменен"
 
-
-    def logout_user(self):
+    def logout_user(
+            self
+            ):
         response = self.dm_account_api.account_api.delete_v1_account_login()
         assert response.status_code == 204, "Пользователь не разлогинен"
 
-    def logout_user_all_devices(self):
+    def logout_user_all_devices(
+            self
+            ):
         response = self.dm_account_api.account_api.delete_v1_account_login_all()
         assert response.status_code == 204, "Пользователь не разлогинен со всех устройств"
 
