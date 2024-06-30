@@ -35,18 +35,6 @@ def account_api():
     return account
 
 
-@pytest.fixture(scope="session")
-def auth_account_helper(
-        mailhog_api
-        ):
-    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
-    account = DMApiAccount(dm_api_configuration)
-    account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
-    account_helper.auth_client(
-        login="Alicia22_06_2024_11_05_51",
-        password="123456789"
-    )
-    return account_helper
 
 
 @pytest.fixture(scope="session")
@@ -72,3 +60,16 @@ def prepare_user():
     User = namedtuple("User", ["login", "password", "email", "change_email", "change_password"])
     user = User(login=login, password=password, email=email, change_email=change_email, change_password=change_password)
     return user
+
+@pytest.fixture(scope="session")
+def auth_account_helper(
+        mailhog_api
+        ):
+    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
+    account = DMApiAccount(dm_api_configuration)
+    account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
+    #account_helper.auth_client(
+     #   login=prepare_user.us,
+      #  password=prepare_user.password
+   # )
+    return account_helper
