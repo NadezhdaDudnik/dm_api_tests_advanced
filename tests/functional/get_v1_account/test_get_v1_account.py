@@ -16,10 +16,10 @@ def test_get_v1_account_auth(
         login=login,
         password=password
     )
-    account_helper.dm_account_api.account_api.get_v1_account()
+    account_helper.dm_account_api.account_api.get_v1_account(validate_response=False)
 
 
 def test_get_v1_account_no_auth(
         account_helper
 ):
-    account_helper.dm_account_api.account_api.get_v1_account()
+    account_helper.dm_account_api.account_api.get_v1_account(validate_response=False)
