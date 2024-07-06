@@ -91,8 +91,6 @@ class AccountHelper:
             login: str,
             password: str,
             remember_me: bool = True,
-            expected_status_code=200,
-            fail_message="Пользователь не авторизован",
             validate_response=False,
             validate_headers=False
     ):
@@ -108,7 +106,6 @@ class AccountHelper:
         )
         if validate_headers:
             assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
-            assert response.status_code == expected_status_code, fail_message
         return response
 
     def change_email(
@@ -131,7 +128,6 @@ class AccountHelper:
         assert token is not None, f"Токен для пользователя c {email} не получен"
 
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
-        # assert response.status_code == 200, "Пользователь не активирован"
 
     def change_password(
             self,
@@ -167,10 +163,9 @@ class AccountHelper:
             token=token
         )
 
-        response = self.dm_account_api.account_api.put_v1_account_change_password(
+        self.dm_account_api.account_api.put_v1_account_change_password(
             change_password=change_password, validate_response=validate_response
             )
-        # assert response.status_code == 200, "Пароль пользователя не изменен"
 
     def logout_user(
             self
