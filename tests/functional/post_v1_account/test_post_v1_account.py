@@ -22,9 +22,7 @@ def test_post_v1_account(
     password = prepare_user.password
     email = prepare_user.email
 
-    response = account_helper.register_new_user(login=login, password=password, email=email)
-    print(response.resource.login)
-    print(response.resource.registration)
+    account_helper.register_new_user(login=login, password=password, email=email)
 
     response = account_helper.user_login(login=login, password=password, validate_response=True)
     assert_that(
@@ -61,7 +59,6 @@ def test_post_v1_account_negative(
         email,
         password,
         account_helper
-
         ):
     with check_status_code_http(400, "Validation failed"):
         account_helper.register_new_user(login=login, password=password, email=email)

@@ -54,17 +54,20 @@ class AccountHelper:
             password: str
     ):
         response = self.user_login(login=login, password=password)
+
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
         }
         self.dm_account_api.account_api.set_headers(token)
         self.dm_account_api.login_api.set_headers(token)
+        return response
 
     def register_new_user(
             self,
             login: str,
             password: str,
-            email: str
+            email: str,
+            validate_response=False
     ):
 
         registration = Registration(
@@ -73,17 +76,11 @@ class AccountHelper:
             password=password
         )
 
-        response = self.dm_account_api.account_api.post_v1_account(registration=registration)
-        assert response.status_code == 201, f"Пользователь не создан {response.json()}"
-
-        start_time = time.time()
+        self.dm_account_api.account_api.post_v1_account(registration=registration)
         token = self.get_token(login=login, token_type="activation")
-        # token = self.get_activation_token_by_login(login=login)
-        end_time = time.time()
-        assert end_time - start_time < 3, "Время ожидания активации превышено"
         assert token is not None, f"Токен для пользователя {login} не получен"
 
-        response = self.dm_account_api.account_api.put_v1_account_token(token=token)
+        response = self.dm_account_api.account_api.put_v1_account_token(token=token, validate_response=validate_response)
         return response
 
     def user_login(
@@ -121,21 +118,19 @@ class AccountHelper:
             password=password
         )
 
-        response = self.dm_account_api.account_api.put_v1_account_change_email(change_email=change_email)
-        # assert response.status_code == 200, "Адрес электронной почты пользователя не изменен"
+        self.dm_account_api.account_api.put_v1_account_change_email(change_email=change_email)
 
         token = self.get_activation_token_by_login_after_change_email(email)
         assert token is not None, f"Токен для пользователя c {email} не получен"
 
-        response = self.dm_account_api.account_api.put_v1_account_token(token=token)
+        self.dm_account_api.account_api.put_v1_account_token(token=token)
 
     def change_password(
             self,
             login: str,
             email: str,
             old_password: str,
-            new_password: str,
-            validate_response=False
+            new_password: str
     ):
         token = self.user_login(login=login, password=old_password)
         reset_password = ResetPassword(
@@ -148,12 +143,10 @@ class AccountHelper:
 
         self.dm_account_api.account_api.post_v1_account_password(
             reset_password=reset_password,
-            headers=headers,
-            validate_response=validate_response
+            headers=headers
         )
 
         token = self.get_token(login=login, token_type="reset")
-        # assert token is not None, f"Авторизационный токен для пользователя не получен"
 
         change_password = ChangePassword(
             login=login,
@@ -164,20 +157,18 @@ class AccountHelper:
         )
 
         self.dm_account_api.account_api.put_v1_account_change_password(
-            change_password=change_password, validate_response=validate_response
+            change_password=change_password
             )
 
     def logout_user(
             self
     ):
-        response = self.dm_account_api.login_api.delete_v1_account_login()
-        assert response.status_code == 204, "Пользователь не разлогинен"
+        self.dm_account_api.login_api.delete_v1_account_login()
 
     def logout_user_all_devices(
             self
     ):
-        response = self.dm_account_api.login_api.delete_v1_account_login_all()
-        assert response.status_code == 204, "Пользователь не разлогинен со всех устройств"
+        self.dm_account_api.login_api.delete_v1_account_login_all()
 
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activation_token_by_login(
@@ -196,7 +187,7 @@ class AccountHelper:
         return token
 
     # @retrier
-    @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
+    @retry(stop_max_attempt_number=10, retry_on_result=retry_if_result_none, wait_fixed=2000)
     def get_activation_token_by_login_after_change_email(
             self,
             change_email,

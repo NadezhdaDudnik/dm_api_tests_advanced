@@ -1,6 +1,10 @@
 from json import JSONDecodeError
 
-from requests import session
+from requests import (
+    session,
+    HTTPError,
+    exceptions,
+)
 import structlog
 import uuid
 import curlify
