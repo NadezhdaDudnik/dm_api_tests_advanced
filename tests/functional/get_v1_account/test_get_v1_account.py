@@ -10,7 +10,6 @@ from hamcrest import (
     equal_to,
     only_contains,
 )
-
 from dm_api_account.models.user_details_envelope import UserRole
 
 
