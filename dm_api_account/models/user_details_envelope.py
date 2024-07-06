@@ -10,6 +10,7 @@ from pydantic import (
 from typing import (
     List,
     Optional,
+    Any,
 )
 
 
@@ -30,31 +31,30 @@ class Rating(BaseModel):
 
 class PagingSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    postsPerPage: int
-    commentsPerPage: int
-    topicsPerPage: int
-    messagesPerPage: int
-    entitiesPerPage: int
+    postsPerPage: int = Field(None, serialization_alias='postsPerPage')
+    commentsPerPage: int = Field(None, serialization_alias='commentsPerPage')
+    topicsPerPage: int = Field(None, serialization_alias='topicsPerPage')
+    messagesPerPage: int = Field(None, serialization_alias='messagesPerPage')
+    entitiesPerPage: int = Field(None, serialization_alias='entitiesPerPage')
 
 
 class BbParseMode(str, Enum):
-    common = 'Common'
-    info = 'Info'
-    post = 'Post'
-    chat = 'Chat'
+    COMMON = 'Common'
+    INFO = 'Info'
+    POST = 'Post'
+    CHAT = 'Chat'
 
 
 class ColorSchema(str, Enum):
-    modern = 'Modern'
-    pale = 'Pale'
-    classic = 'Classic'
-    classic_pale = 'ClassicPale'
-    night = 'Night'
+    MODERN = 'Modern'
+    PALE = 'Pale'
+    CLASSIC = 'Classic'
+    CLASSIC_PALE = 'ClassicPale'
+    NIGHT = 'Night'
 
 
 class InfoBbText(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
     value: Optional[str] = Field(None, description='Text')
     parse_mode: Optional[BbParseMode] = Field(None, alias='parseMode')
 
@@ -62,11 +62,8 @@ class InfoBbText(BaseModel):
 class UserSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    color_schema: Optional[ColorSchema] = Field(None, alias='colorSchema')
-    nanny_greetings_message: Optional[str] = Field(
-        None,
-        alias='nannyGreetingsMessage'
-    )
+    colorSchema: Optional[ColorSchema] = Field(None, serialization_alias='colorSchema')
+    nannyGreetingsMessage: Optional[str] = Field(None, serialization_alias='nannyGreetingsMessage')
     paging: Optional[PagingSettings] = None
 
 
@@ -84,11 +81,12 @@ class UserDetails(BaseModel):
     icq: str = Field(None, alias="icq")
     skype: str = Field(None, alias="skype")
     originalPictureUrl: str = Field(None, serialization_alias="originalPictureUrl")
-    info: Optional[InfoBbText] = Field(None)
+    #info: InfoBbText
+    info: Any = Field(None)
     settings: Optional[UserSettings] = Field(None)
 
 
 class UserDetailsEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid")
     resource: Optional[UserDetails] = None
-    metadata: Optional[str] = None
+    metadata: Optional[Any] = None
