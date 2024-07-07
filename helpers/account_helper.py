@@ -111,6 +111,7 @@ class AccountHelper:
             assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
         return response
 
+    @allure.step("Изменение Email пользователя")
     def change_email(
             self,
             login: str,
@@ -131,6 +132,7 @@ class AccountHelper:
 
         self.dm_account_api.account_api.put_v1_account_token(token=token)
 
+    @allure.step("Сброс и изменение пароля пользователя")
     def change_password(
             self,
             login: str,
@@ -166,11 +168,13 @@ class AccountHelper:
             change_password=change_password
         )
 
+    @allure.step("Выход из системы пользователя")
     def logout_user(
             self
     ):
         self.dm_account_api.login_api.delete_v1_account_login()
 
+    @allure.step("Выход из всех устройств пользователя")
     def logout_user_all_devices(
             self
     ):
