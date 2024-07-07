@@ -63,8 +63,9 @@ jobs:
     steps:
       - name: Downloads allure results
         uses: actions/download-artifact@v3
-      - name: allure open -c allure-results
+      - name: Upload allure report
         uses: actions/upload-pages-artifact@v2
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
+      - run: echo "https://nadezhdadudnik.github.io/dm_api_tests_advanced/"
