@@ -1,6 +1,8 @@
 import time
 from json import loads
 
+import allure
+
 from dm_api_account.models.change_email import ChangeEmail
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
@@ -62,6 +64,7 @@ class AccountHelper:
         self.dm_account_api.login_api.set_headers(token)
         return response
 
+    @allure.step("Регистрация нового пользователя")
     def register_new_user(
             self,
             login: str,
@@ -80,9 +83,12 @@ class AccountHelper:
         token = self.get_token(login=login, token_type="activation")
         assert token is not None, f"Токен для пользователя {login} не получен"
 
-        response = self.dm_account_api.account_api.put_v1_account_token(token=token, validate_response=validate_response)
+        response = self.dm_account_api.account_api.put_v1_account_token(
+            token=token, validate_response=validate_response
+            )
         return response
 
+    @allure.step("Аутентификация пользователя")
     def user_login(
             self,
             login: str,
@@ -158,7 +164,7 @@ class AccountHelper:
 
         self.dm_account_api.account_api.put_v1_account_change_password(
             change_password=change_password
-            )
+        )
 
     def logout_user(
             self
