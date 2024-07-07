@@ -2,6 +2,11 @@ name: Python Tests
 
 on: [ pull_request ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test:
     name: Python tests
@@ -61,6 +66,6 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Upload allure report
         uses: actions/upload-pages-artifact@v2
-      - name: Deploy to GiyHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1.2.9
