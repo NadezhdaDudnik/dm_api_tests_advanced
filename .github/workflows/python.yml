@@ -25,12 +25,11 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest ./tests --alluredir=../allure-results --disable-warnings
+          pytest ./tests --alluredir=allure-results --disable-warnings
         continue-on-error: true
 
       - name: Archive allure results
         uses: actions/upload-artifact@v3
-        if: always()
         with:
           name: allure-results
           path: allure-results
