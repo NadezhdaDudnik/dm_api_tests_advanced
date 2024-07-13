@@ -1,22 +1,14 @@
-from array import array
 from datetime import datetime
-from assertpy import (
-    assert_that,
-    soft_assertions,
-)
 
 from hamcrest import (
     assert_that,
-    has_property,
-    starts_with,
-    all_of,
-    instance_of,
     has_properties,
+    has_key,
+    starts_with,
     equal_to,
-    only_contains,
+    instance_of,
+    has_property,
 )
-
-from dm_api_account.models.user_details_envelope import UserRole
 
 
 class GetV1Account:
@@ -25,45 +17,86 @@ class GetV1Account:
             cls,
             response
     ):
+        resource = response.resource
+
         assert_that(
-            response, all_of(
-                has_property(
-                    'resource', has_properties(
+            resource,
+            has_properties(
+                {
+                    "info": equal_to(""),
+                    "settings": has_properties(
                         {
-                            'settings': has_properties(
+                            "color_schema": starts_with("Modern"),
+                            'paging': has_properties(
                                 {
-                                    "colorSchema": starts_with("Modern"),
-                                    'paging': has_properties(
-                                        {
-                                            "postsPerPage": equal_to(10),
-                                            "commentsPerPage": equal_to(10),
-                                            "topicsPerPage": equal_to(10),
-                                            "messagesPerPage": equal_to(10),
-                                            "entitiesPerPage": equal_to(10)
-                                        }
-                                    )
+                                    "posts_per_page": equal_to(10),
+                                    "comments_per_page": equal_to(10),
+                                    "topics_per_page": equal_to(10),
+                                    "messages_per_page": equal_to(10),
+                                    "entities_per_page": equal_to(10)
                                 }
-                            ),
-                            'roles': all_of(
-                                only_contains(
-                                    UserRole.GUEST,
-                                    UserRole.PLAYER,
-                                )
-                            ),
-                            'rating': has_properties(
-                                {
-                                    "enabled": equal_to(True),
-                                    "quality": equal_to(0),
-                                    "quantity": equal_to(0)
-                                }
-                            ),
-                            'online': instance_of(datetime),
-                            'registration': instance_of(datetime),
+                            )
                         }
-                    )
-                )
+                    ),
+                    "roles": equal_to(["Guest", "Player"]),
+                    "rating": has_properties(
+                        {
+                            "enabled": equal_to(True),
+                            "quality": equal_to(0),
+                            "quantity": equal_to(0)
+                        }
+                    ),
+                    "online": instance_of(datetime),
+                    "registration": instance_of(datetime)
+                }
             )
         )
+
+        assert_that(resource, has_property('info'))
+        assert_that(resource, has_property('settings'))
+        assert_that(resource, has_property('roles'))
+        assert_that(resource, has_property('rating'))
+        assert_that(resource, has_property('online'))
+        assert_that(resource, has_property('registration'))
+        # assert_that(
+        #     response, all_of(
+        #         has_properties(
+        #             'resource', has_properties(
+        #                 {
+        #                     'settings': has_properties(
+        #                         {
+        #                             "colorSchema": starts_with("Modern"),
+        #                             'paging': has_properties(
+        #                                 {
+        #                                     "postsPerPage": equal_to(10),
+        #                                     "commentsPerPage": equal_to(10),
+        #                                     "topicsPerPage": equal_to(10),
+        #                                     "messagesPerPage": equal_to(10),
+        #                                     "entitiesPerPage": equal_to(10)
+        #                                 }
+        #                             )
+        #                         }
+        #                     ),
+        #                     'roles': all_of(
+        #                         only_contains(
+        #                             UserRole.GUEST,
+        #                             UserRole.PLAYER,
+        #                         )
+        #                     ),
+        #                     'rating': has_properties(
+        #                         {
+        #                             "enabled": equal_to(True),
+        #                             "quality": equal_to(0),
+        #                             "quantity": equal_to(0)
+        #                         }
+        #                     ),
+        #                     'online': instance_of(datetime),
+        #                     'registration': instance_of(datetime),
+        #                 }
+        #             )
+        #         )
+        #     )
+        # )
         # with soft_assertions():
         #     today = datetime.now().strftime('%Y-%m-%d')
         #     assert_that(str(response.resource.registration).startswith(today))

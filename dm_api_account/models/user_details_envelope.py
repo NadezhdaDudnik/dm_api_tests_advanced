@@ -24,18 +24,19 @@ class UserRole(str, Enum):
 
 
 class Rating(BaseModel):
+    model_config = ConfigDict(extra='forbid')
     enabled: bool
     quality: int
     quantity: int
 
 
 class PagingSettings(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    postsPerPage: int = Field(None, serialization_alias='postsPerPage')
-    commentsPerPage: int = Field(None, serialization_alias='commentsPerPage')
-    topicsPerPage: int = Field(None, serialization_alias='topicsPerPage')
-    messagesPerPage: int = Field(None, serialization_alias='messagesPerPage')
-    entitiesPerPage: int = Field(None, serialization_alias='entitiesPerPage')
+    model_config = ConfigDict(extra='forbid')
+    posts_per_page: int = Field(..., alias='postsPerPage')
+    comments_per_page: int = Field(..., alias='commentsPerPage')
+    topics_per_page: int = Field(..., alias='topicsPerPage')
+    messages_per_page: int = Field(..., alias='messagesPerPage')
+    entities_per_page: int = Field(..., alias='entitiesPerPage')
 
 
 class BbParseMode(str, Enum):
@@ -61,17 +62,16 @@ class InfoBbText(BaseModel):
 
 class UserSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
-    colorSchema: Optional[ColorSchema] = Field(None, serialization_alias='colorSchema')
-    nannyGreetingsMessage: Optional[str] = Field(None, serialization_alias='nannyGreetingsMessage')
-    paging: Optional[PagingSettings] = None
+    color_schema: str = Field(..., alias='colorSchema')
+    nanny_greetings_message: str = Field(None, alias='nannyGreetingsMessage')
+    paging: PagingSettings
 
 
 class UserDetails(BaseModel):
     login: str
     roles: List[UserRole]
-    mediumPictureUrl: str = Field(None, serialization_alias="mediumPictureUrl")
-    smallPictureUrl: str = Field(None, serialization_alias="smallPictureUrl")
+    medium_picture_url: str = Field(None, alias="mediumPictureUrl")
+    small_picture_url: str = Field(None, alias="smallPictureUrl")
     status: str = Field(None, alias="status")
     rating: Rating
     online: datetime = Field(None, alias="online")
@@ -80,13 +80,13 @@ class UserDetails(BaseModel):
     registration: datetime = Field(None, alias="registration")
     icq: str = Field(None, alias="icq")
     skype: str = Field(None, alias="skype")
-    originalPictureUrl: str = Field(None, serialization_alias="originalPictureUrl")
-    #info: InfoBbText
+    original_picture_url: str = Field(None, alias="originalPictureUrl")
+    # info: InfoBbText
     info: Any = Field(None)
-    settings: Optional[UserSettings] = Field(None)
+    settings: UserSettings
 
 
 class UserDetailsEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    resource: Optional[UserDetails] = None
+    resource: UserDetails
     metadata: Optional[Any] = None
