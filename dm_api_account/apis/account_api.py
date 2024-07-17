@@ -91,7 +91,7 @@ class AccountApi(RestClient):
     def post_v1_account_password(
             self,
             reset_password: ResetPassword,
-            validate_response=True,
+            validate_response=False,
             **kwargs
     ):
         """
@@ -100,6 +100,7 @@ class AccountApi(RestClient):
         :param json_data:
         :return:
         """
+
         response = self.post(
             path=f'/v1/account/password',
             json=reset_password.model_dump(exclude_none=True, by_alias=True),
@@ -112,7 +113,7 @@ class AccountApi(RestClient):
     def put_v1_account_change_password(
             self,
             change_password: ChangePassword,
-            validate_response=True,
+            validate_response=False,
             **kwargs
     ):
         """
@@ -129,5 +130,3 @@ class AccountApi(RestClient):
         if validate_response:
             return UserEnvelope(**response.json())
         return response
-
-
