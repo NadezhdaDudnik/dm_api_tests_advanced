@@ -24,7 +24,7 @@ class TestsPostV1Account:
 
         PostV1Account.check_response_values(response)
 
-@allure.sub_suite("Негативные тесты")
+
 @pytest.mark.parametrize(
     'login, email, password', [
         ('login_47', 'login_47233@mail.ru', 'login'),
@@ -32,6 +32,7 @@ class TestsPostV1Account:
         ('l', 'login47222@mail.ru', 'login_55')
     ]
 )
+@allure.sub_suite("Негативные тесты")
 class TestsNegativePostV1Account:
     @allure.title("Проверка 400 статус кода")
     def test_post_v1_account_negative(

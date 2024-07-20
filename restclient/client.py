@@ -1,6 +1,4 @@
-import re
 from json import JSONDecodeError
-
 from requests import (
     session,
     HTTPError,
@@ -10,6 +8,7 @@ import structlog
 import uuid
 import curlify
 import json
+import re
 from restclient.configuration import Configuration
 from restclient.utilities import allure_attach
 
@@ -31,7 +30,6 @@ def mask_curl_command(
         keys_to_mask
         ):
     for key in keys_to_mask:
-        # Маскируем значения в JSON теле запроса
         curl_command = re.sub(rf'("{key}": ")([^"]+)', rf'\1*****', curl_command)
         curl_command = re.sub(rf"('{key}': ')([^']+)", rf'\1*****', curl_command)
     return curl_command
