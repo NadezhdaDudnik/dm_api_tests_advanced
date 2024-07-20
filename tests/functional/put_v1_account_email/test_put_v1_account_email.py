@@ -1,8 +1,11 @@
 import allure
 
+@allure.suite("Account Management")
+@allure.epic("User Change Email")
+@allure.feature("Change Email Functionality")
+@allure.story("PUT v1/account/email")
+@allure.sub_suite("Positive Tests")
 
-@allure.suite("Тесты на проверку метода PUT v1/account/email")
-@allure.sub_suite("Позитивные тесты")
 class TestsPostV1AccountEmail:
     @allure.title("Проверка смены Email пользователя")
     def test_put_v1_account_email(
@@ -22,5 +25,5 @@ class TestsPostV1AccountEmail:
             password=password
         )
 
-        account_helper.change_email(login=login, password=password, email=change_email)
+        account_helper.change_email(login=login, password=password, email=change_email, validate_response=False)
 

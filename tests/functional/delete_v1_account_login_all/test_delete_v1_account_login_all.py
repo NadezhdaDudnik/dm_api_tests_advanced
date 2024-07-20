@@ -1,8 +1,11 @@
 import allure
 
 
-@allure.suite("Тесты на проверку метода DELETE v1/account/login/all")
-@allure.sub_suite("Позитивные тесты")
+@allure.suite("Account Management")
+@allure.epic("User Logaut all devices")
+@allure.feature("Logaut Functionality")
+@allure.story("DELETE /v1/account/login/all")
+@allure.sub_suite("Positive Tests")
 class TestsDeleteV1AccountLoginAll:
     @allure.title("Проверка выхода пользователя из системы из всех устройств")
 

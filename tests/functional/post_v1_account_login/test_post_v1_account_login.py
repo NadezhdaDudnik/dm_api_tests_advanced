@@ -1,10 +1,13 @@
 import allure
 
 
-@allure.suite("Тесты на проверку метода POST v1/account/login")
-@allure.sub_suite("Позитивные тесты")
+@allure.suite("Account Management")
+@allure.epic("User Authentication")
+@allure.feature("Login Functionality")
+@allure.story("POST /v1/account/login")
+@allure.sub_suite("Positive Tests")
 class TestsPostV1AccountLogin:
-    @allure.title("Проверка авторизации пользователя")
+    @allure.title("Successful User Login")
     def test_post_v1_account_login(
             self,
             account_helper,

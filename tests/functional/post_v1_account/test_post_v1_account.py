@@ -5,8 +5,11 @@ from checkers.http_checkers import check_status_code_http
 from checkers.post_v1_account import PostV1Account
 
 
-@allure.suite("Тесты на проверку метода POST v1/account")
-@allure.sub_suite("Позитивные тесты")
+@allure.suite("Account Management")
+@allure.epic("User Registration")
+@allure.feature("Register Functionality")
+@allure.story("POST /v1/account")
+@allure.sub_suite("Positive Tests")
 class TestsPostV1Account:
     @allure.title("Проверка регистрации нового пользователя")
     def test_post_v1_account(
@@ -24,7 +27,7 @@ class TestsPostV1Account:
 
         PostV1Account.check_response_values(response)
 
-
+@allure.sub_suite("Positive Tests")
 @pytest.mark.parametrize(
     'login, email, password', [
         ('login_47', 'login_47233@mail.ru', 'login'),
@@ -32,7 +35,7 @@ class TestsPostV1Account:
         ('l', 'login47222@mail.ru', 'login_55')
     ]
 )
-@allure.sub_suite("Негативные тесты")
+
 class TestsNegativePostV1Account:
     @allure.title("Проверка 400 статус кода")
     def test_post_v1_account_negative(

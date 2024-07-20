@@ -1,8 +1,11 @@
 import allure
 
+@allure.suite("Account Management")
+@allure.epic("Activation Token")
+@allure.feature("Token Functionality")
+@allure.story("PUT v1/account/token")
+@allure.sub_suite("Positive Tests")
 
-@allure.suite("Тесты на проверку метода PUT v1/account/token")
-@allure.sub_suite("Позитивные тесты")
 class TestsPostV1Account:
     @allure.title("Проверка активации токена для пользователя")
     def test_put_v1_account_token(

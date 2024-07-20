@@ -1,9 +1,12 @@
 import allure
 
 from checkers.http_checkers import check_status_code_http
+@allure.suite("Account Management")
+@allure.epic("User Change Password")
+@allure.feature("Change Password Functionality")
+@allure.story("PUT v1/account/password")
+@allure.sub_suite("Positive Tests")
 
-@allure.suite("Тесты на проверку метода PUT v1/account/password")
-@allure.sub_suite("Негативные тесты")
 class TestsPutV1AccountPassword:
     @allure.title("Проверка 400 статус кода при смене пароля пользователя")
     def test_put_v1_account_password(

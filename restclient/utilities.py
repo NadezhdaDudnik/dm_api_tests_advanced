@@ -36,7 +36,6 @@ def allure_attach(fn):
 
         response = fn(*args, **kwargs)
 
-        # Mask the curl command
         curl = curlify.to_curl(response.request)
         masked_curl = mask_curl_command(curl, keys_to_mask)
         allure.attach(masked_curl, name="curl", attachment_type=allure.attachment_type.TEXT)
