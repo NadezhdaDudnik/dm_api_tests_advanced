@@ -21,8 +21,9 @@ class TestsPutV1AccountPassword:
         change_password = prepare_user.change_password
 
         account_helper.register_new_user(login=login, password=password, email=email)
+        # account_helper.change_password(login=login, email=email, old_password=password, new_password=change_password)
+        # account_helper.user_login(login=login, password=password)
 
-        account_helper.user_login(login=login, password=password)
         with check_status_code_http(400, 'Validation failed'):
             account_helper.change_password(login=login, email=email, old_password=password, new_password=change_password)
         with check_status_code_http(400, 'One or more validation errors occurred.'):

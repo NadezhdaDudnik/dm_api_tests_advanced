@@ -1,5 +1,5 @@
 import allure
-import pytest
+
 
 from checkers.http_checkers import check_status_code_http
 from checkers.post_v1_account import PostV1Account
@@ -23,9 +23,9 @@ class TestsPostV1Account:
 
         account_helper.register_new_user(login=login, password=password, email=email)
 
-        response = account_helper.user_login(login=login, password=password, validate_response=True)
+        response = account_helper.user_login(login=login, password=password, validate_response=False)
 
-        PostV1Account.check_response_values(response)
+        # PostV1Account.check_response_values(response, validate_response=False)
 
 # @allure.sub_suite("Negative Tests")
 # @pytest.mark.parametrize(

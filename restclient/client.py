@@ -42,7 +42,7 @@ class RestClient:
     def _send_request(self, method, path, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
         full_url = self.host + path
-        keys_to_mask = ['password', 'login', 'token', 'access_token', 'authorization', 'X-Dm-Auth-Token']
+        keys_to_mask = ['password', 'login', 'token', 'access_token', 'authorization', 'X-Dm-Auth-Token', 'x-dm-auth-token']
 
         if self.disable_log:
             rest_response = self.session.request(method=method, url=full_url, **kwargs)

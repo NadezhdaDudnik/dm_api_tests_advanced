@@ -1,7 +1,7 @@
 import json
+import re
 import allure
 import curlify
-import re
 
 # Function to mask sensitive data
 def mask_sensitive_data(data, keys_to_mask):
@@ -19,10 +19,34 @@ def mask_curl_command(curl_command, keys_to_mask):
         curl_command = re.sub(rf'({key}=)([^&]+)', rf'\1*****', curl_command)
     return curl_command
 
+# Check if the object can be JSON serialized
+def is_json_serializable(obj):
+    try:
+        json.dumps(obj)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
 # Decorator for attaching requests and responses to Allure reports with masking
 def allure_attach(fn):
     def wrapper(*args, **kwargs):
         keys_to_mask = ['password', 'login', 'token', 'access_token', 'authorization', 'X-Dm-Auth-Token']
+
+        # Mask the function arguments
+        masked_args = [
+            mask_sensitive_data(arg, keys_to_mask) if is_json_serializable(arg) else '*****'
+            for arg in args
+        ]
+        masked_kwargs = {
+            k: mask_sensitive_data(v, keys_to_mask) if is_json_serializable(v) else '*****'
+            for k, v in kwargs.items()
+        }
+
+        allure.attach(
+            json.dumps({"args": masked_args, "kwargs": masked_kwargs}, indent=4),
+            name="function_parameters",
+            attachment_type=allure.attachment_type.JSON,
+        )
 
         # Mask the request body
         body = kwargs.get("json")
