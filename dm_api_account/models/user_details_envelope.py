@@ -90,3 +90,4 @@ class UserDetailsEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid")
     resource: UserDetails
     metadata: Optional[Any] = None
+
