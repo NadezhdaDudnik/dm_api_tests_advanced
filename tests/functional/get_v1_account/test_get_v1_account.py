@@ -33,6 +33,7 @@ class TestsGetV1AccountAuth:
 class TestsGetV1AccountNoAuth:
     @allure.title("Проверка получения неаутентифицированного пользователя")
 
+
     def test_get_v1_account_no_auth(
             self,
             auth_account_helper

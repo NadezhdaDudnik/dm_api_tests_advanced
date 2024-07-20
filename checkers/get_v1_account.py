@@ -58,45 +58,6 @@ class GetV1Account:
         assert_that(resource, has_property('rating'))
         assert_that(resource, has_property('online'))
         assert_that(resource, has_property('registration'))
-        # assert_that(
-        #     response, all_of(
-        #         has_properties(
-        #             'resource', has_properties(
-        #                 {
-        #                     'settings': has_properties(
-        #                         {
-        #                             "colorSchema": starts_with("Modern"),
-        #                             'paging': has_properties(
-        #                                 {
-        #                                     "postsPerPage": equal_to(10),
-        #                                     "commentsPerPage": equal_to(10),
-        #                                     "topicsPerPage": equal_to(10),
-        #                                     "messagesPerPage": equal_to(10),
-        #                                     "entitiesPerPage": equal_to(10)
-        #                                 }
-        #                             )
-        #                         }
-        #                     ),
-        #                     'roles': all_of(
-        #                         only_contains(
-        #                             UserRole.GUEST,
-        #                             UserRole.PLAYER,
-        #                         )
-        #                     ),
-        #                     'rating': has_properties(
-        #                         {
-        #                             "enabled": equal_to(True),
-        #                             "quality": equal_to(0),
-        #                             "quantity": equal_to(0)
-        #                         }
-        #                     ),
-        #                     'online': instance_of(datetime),
-        #                     'registration': instance_of(datetime),
-        #                 }
-        #             )
-        #         )
-        #     )
-        # )
         # with soft_assertions():
         #     today = datetime.now().strftime('%Y-%m-%d')
         #     assert_that(str(response.resource.registration).startswith(today))
