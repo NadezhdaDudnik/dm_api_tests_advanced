@@ -10,29 +10,11 @@ import curlify
 import json
 import re
 from restclient.configuration import Configuration
-from restclient.utilities import allure_attach
-
-
-def mask_sensitive_data(
-        data,
-        keys_to_mask
-        ):
-    if not data:
-        return data
-    if isinstance(data, dict):
-        return {k: (mask_sensitive_data(v, keys_to_mask) if k not in keys_to_mask else '*****') for k, v in
-                data.items()}
-    return data
-
-
-def mask_curl_command(
-        curl_command,
-        keys_to_mask
-        ):
-    for key in keys_to_mask:
-        curl_command = re.sub(rf'("{key}": ")([^"]+)', rf'\1*****', curl_command)
-        curl_command = re.sub(rf"('{key}': ')([^']+)", rf'\1*****', curl_command)
-    return curl_command
+from restclient.utilities import (
+    mask_sensitive_data,
+    mask_curl_command,
+    allure_attach,
+)
 
 
 class RestClient:
