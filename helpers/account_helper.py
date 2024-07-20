@@ -1,7 +1,10 @@
+import json
+import re
 import time
 from json import loads
 
 import allure
+import curlify
 
 from dm_api_account.models.change_email import ChangeEmail
 from dm_api_account.models.change_password import ChangePassword
@@ -47,7 +50,7 @@ class AccountHelper:
             self,
             dm_account_api: DMApiAccount,
             mailhog: MailHogApi
-            ):
+    ):
         self.dm_account_api = dm_account_api
         self.mailhog = mailhog
 
@@ -55,7 +58,7 @@ class AccountHelper:
             self,
             login: str,
             password: str
-            ):
+    ):
         response = self.user_login(login=login, password=password)
         token = {
             "x-dm-auth-token": response.headers["x-dm-auth-token"]
@@ -71,14 +74,16 @@ class AccountHelper:
             password: str,
             email: str,
             validate_response=False
-            ):
+    ):
+
         registration = Registration(login=login, email=email, password=password)
         self.dm_account_api.account_api.post_v1_account(registration=registration)
+
         token = self.get_token(login=login, token_type="activation")
         assert token is not None, f"Токен для пользователя {login} не получен"
         response = self.dm_account_api.account_api.put_v1_account_token(
             token=token, validate_response=validate_response
-            )
+        )
         return response
 
     @allure.step("Аутентификация пользователя")
@@ -89,11 +94,11 @@ class AccountHelper:
             remember_me: bool = True,
             validate_response=False,
             validate_headers=False
-            ):
+    ):
         login_credentials = LoginCredentials(login=login, password=password, remember_me=remember_me)
         response = self.dm_account_api.login_api.post_v1_account_login(
             login_credentials=login_credentials, validate_response=validate_response
-            )
+        )
         if validate_headers:
             assert response.headers["x-dm-auth-token"], "Токен для пользователя не был получен"
         return response
@@ -105,12 +110,14 @@ class AccountHelper:
             password: str,
             email: str,
             validate_response=False
-            ):
+    ):
         change_email = ChangeEmail(login=login, email=email, password=password)
-        self.dm_account_api.account_api.put_v1_account_change_email(change_email=change_email, validate_response=validate_response)
+        self.dm_account_api.account_api.put_v1_account_change_email(
+            change_email=change_email, validate_response=validate_response
+            )
         token = self.get_activation_token_by_login_after_change_email(email)
         assert token is not None, f"Токен для пользователя c {email} не получен"
-        self.dm_account_api.account_api.put_v1_account_token(token=token,validate_response=validate_response)
+        self.dm_account_api.account_api.put_v1_account_token(token=token, validate_response=validate_response)
 
     @allure.step("Сброс и изменение пароля пользователя")
     def change_password(
@@ -119,7 +126,7 @@ class AccountHelper:
             email: str,
             old_password: str,
             new_password: str
-            ):
+    ):
         token = self.user_login(login=login, password=old_password)
         reset_password = ResetPassword(login=login, email=email)
         headers = {
@@ -129,19 +136,19 @@ class AccountHelper:
         token = self.get_token(login=login, token_type="reset")
         change_password = ChangePassword(
             login=login, email=email, old_password=old_password, new_password=new_password, token=token
-            )
+        )
         self.dm_account_api.account_api.put_v1_account_change_password(change_password=change_password)
 
     @allure.step("Выход из системы пользователя")
     def logout_user(
             self
-            ):
+    ):
         self.dm_account_api.login_api.delete_v1_account_login()
 
     @allure.step("Выход из всех устройств пользователя")
     def logout_user_all_devices(
             self
-            ):
+    ):
         self.dm_account_api.login_api.delete_v1_account_login_all()
 
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)

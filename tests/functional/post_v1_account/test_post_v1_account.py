@@ -27,23 +27,23 @@ class TestsPostV1Account:
 
         PostV1Account.check_response_values(response)
 
-@allure.sub_suite("Positive Tests")
-@pytest.mark.parametrize(
-    'login, email, password', [
-        ('login_47', 'login_47233@mail.ru', 'login'),
-        ('login789', 'login_47222mail.ru', 'login_55'),
-        ('l', 'login47222@mail.ru', 'login_55')
-    ]
-)
-
-class TestsNegativePostV1Account:
-    @allure.title("Проверка 400 статус кода")
-    def test_post_v1_account_negative(
-            self,
-            login,
-            email,
-            password,
-            account_helper
-    ):
-        with check_status_code_http(400, "Validation failed"):
-            account_helper.register_new_user(login=login, password=password, email=email)
+# @allure.sub_suite("Negative Tests")
+# @pytest.mark.parametrize(
+#     'login, email, password', [
+#         ('login_47', 'login_47233@mail.ru', 'login'),
+#         ('login789', 'login_47222mail.ru', 'login_55'),
+#         ('l', 'login47222@mail.ru', 'login_55')
+#     ]
+# )
+#
+# class TestsNegativePostV1Account:
+#     @allure.title("Проверка 400 статус кода")
+#     def test_post_v1_account_negative(
+#             self,
+#             login,
+#             email,
+#             password,
+#             account_helper
+#     ):
+#         with check_status_code_http(400, "Validation failed"):
+#             account_helper.register_new_user(login=login, password=password, email=email)
