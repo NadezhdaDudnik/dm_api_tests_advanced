@@ -17,6 +17,10 @@ def mask_curl_command(curl_command, keys_to_mask):
         curl_command = re.sub(rf'("{key}": ")([^"]+)', rf'\1*****', curl_command)
         curl_command = re.sub(rf"('{key}': ')([^']+)", rf'\1*****', curl_command)
         curl_command = re.sub(rf'({key}=)([^&]+)', rf'\1*****', curl_command)
+        # Регулярное выражение для замены токенов в заголовках
+        curl_command = re.sub(f"({key}:) '([^']*)'", f"\\1 '*****'", curl_command, flags=re.IGNORECASE)
+        # Регулярное выражение для замены токенов в URL
+        curl_command = re.sub(f"(http[s]?://[^/]+/v1/account/)([^ ]+)", f"\\1*****", curl_command)
     return curl_command
 
 # Check if the object can be JSON serialized

@@ -59,13 +59,14 @@ class AccountHelper:
             login,
             password
     ):
-        response = self.user_login(login=login, password=password)
-        token = {
-            "x-dm-auth-token": response.headers["x-dm-auth-token"]
-        }
-        self.dm_account_api.account_api.set_headers(token)
-        self.dm_account_api.login_api.set_headers(token)
-        return response
+        with allure.step("Авторизованный пользователь"):
+            response = self.user_login(login=login, password=password)
+            token = {
+                "x-dm-auth-token": response.headers["x-dm-auth-token"]
+            }
+            self.dm_account_api.account_api.set_headers(token)
+            self.dm_account_api.login_api.set_headers(token)
+            return response
 
     def register_new_user(
             self,
@@ -165,6 +166,14 @@ class AccountHelper:
                 print(user_login)
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
                 print(token)
+
+                if token:
+                    masked_token = token[:4] + "****" + token[-4:]  # Маскировка токена
+                    allure.attach(
+                        f"Полученный токен: {masked_token}", name="Token",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                    break
         return token
 
     @retry(stop_max_attempt_number=10, retry_on_result=retry_if_result_none, wait_fixed=2000)
@@ -181,6 +190,13 @@ class AccountHelper:
                 print(user_email)
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
                 print(token)
+                if token:
+                    masked_token = token[:4] + "****" + token[-4:]  # Маскировка токена
+                    allure.attach(
+                        f"Полученный токен: {masked_token}", name="Token",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                    break
         return token
 
     @retry(stop_max_attempt_number=10, retry_on_result=retry_if_result_none, wait_fixed=2000)

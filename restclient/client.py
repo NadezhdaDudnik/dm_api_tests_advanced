@@ -42,7 +42,10 @@ class RestClient:
     def _send_request(self, method, path, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
         full_url = self.host + path
-        keys_to_mask = ['password', 'login', 'token', 'access_token', 'authorization', 'X-Dm-Auth-Token', 'x-dm-auth-token']
+        keys_to_mask = [
+            'password', 'login', 'token', 'access_token', 'authorization',
+            'X-Dm-Auth-Token', 'x-dm-auth-token', 'full_url', 'Location'
+        ]
 
         if self.disable_log:
             rest_response = self.session.request(method=method, url=full_url, **kwargs)
@@ -57,7 +60,7 @@ class RestClient:
         log.msg(
             event='Request',
             method=method,
-            full_url=full_url,
+            full_url='*****' if 'full_url' in keys_to_mask else full_url,
             params=masked_params,
             headers=masked_headers,
             json=masked_json,
