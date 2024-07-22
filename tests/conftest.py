@@ -9,9 +9,12 @@ from faker import Faker
 from helpers.account_helper import AccountHelper
 from restclient.configuration import Configuration as MailhogConfiguration
 from restclient.configuration import Configuration as DmApiConfiguration
+from restclient.utilities import allure_attach
 from services.dm_api_account import DMApiAccount
 from services.api_mailhog import MailHogApi
 import structlog
+import json
+import re
 
 structlog.configure(
     processors=[
@@ -28,6 +31,22 @@ options = (
     'user.password'
 )
 
+def mask_string(string, keys_to_mask):
+    for key in keys_to_mask:
+        string = re.sub(rf'({key}=)([^&]+)', rf'\1*****', string)
+    return string
+
+def mask_user_data(user):
+    keys_to_mask = ['login', 'password', 'email', 'change_email', 'change_password']
+    return namedtuple(
+        "User", ["login", "password", "email", "change_email", "change_password"]
+    )(
+        login=mask_string(user.login, keys_to_mask),
+        password=mask_string(user.password, keys_to_mask),
+        email=mask_string(user.email, keys_to_mask),
+        change_email=mask_string(user.change_email, keys_to_mask),
+        change_password=mask_string(user.change_password, keys_to_mask)
+    )
 
 @pytest.fixture(scope='session', autouse=True)
 def set_config(
@@ -64,7 +83,6 @@ def account_api():
     account = DMApiAccount(dm_api_configuration)
     return account
 
-
 @pytest.fixture(scope="function")
 def account_helper(
         account_api,
@@ -87,7 +105,7 @@ def prepare_user():
 
     User = namedtuple("User", ["login", "password", "email", "change_email", "change_password"])
     user = User(login=login, password=password, email=email, change_email=change_email, change_password=change_password)
-    return user
+    return mask_user_data(user)
 
 
 @pytest.fixture(scope="function")

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import allure
 from assertpy import assert_that
 
 from hamcrest import (
@@ -18,23 +19,24 @@ class PostV1Account:
             cls,
             response
     ):
-        today = datetime.now().strftime('%Y-%m-%d')
-        #assert_that(str(response.resource.registration).startswith(today))
-        assert_that(
-            response, all_of(
-                has_property('resource', has_property('registration', instance_of(datetime))),
-                has_property(
-                    'resource', has_properties(
-                        {
-                            'rating': has_properties(
-                                {
-                                    "enabled": equal_to(True),
-                                    "quality": equal_to(0),
-                                    "quantity": equal_to(0)
-                                }
-                            )
-                        }
+        with allure.step("Проверка ответа"):
+            today = datetime.now().strftime('%Y-%m-%d')
+            # assert_that(str(response.resource.registration).startswith(today))
+            assert_that(
+                response, all_of(
+                    has_property('resource', has_property('registration', instance_of(datetime))),
+                    has_property(
+                        'resource', has_properties(
+                            {
+                                'rating': has_properties(
+                                    {
+                                        "enabled": equal_to(True),
+                                        "quality": equal_to(0),
+                                        "quantity": equal_to(0)
+                                    }
+                                )
+                            }
+                        )
                     )
                 )
             )
-        )

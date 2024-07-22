@@ -1,18 +1,13 @@
 from datetime import datetime
-from assertpy import (
-    assert_that,
-    soft_assertions,
-)
 
 from hamcrest import (
     assert_that,
-    has_property,
-    starts_with,
-    all_of,
-    instance_of,
     has_properties,
+    has_key,
+    starts_with,
     equal_to,
-    only_contains,
+    instance_of,
+    has_property,
 )
 
 

@@ -31,8 +31,8 @@ class Rating(BaseModel):
 class User(BaseModel):
     login: str
     roles: List[UserRole]
-    mediumPictureUrl: str = Field(None, serialization_alias="mediumPictureUrl")
-    smallPictureUrl: str = Field(None, serialization_alias="smallPictureUrl")
+    medium_picture_url: str = Field(None, alias="mediumPictureUrl")
+    small_picture_url: str = Field(None, alias="smallPictureUrl")
     status: str = Field(None, alias="status")
     rating: Rating
     online: datetime = Field(None, alias="online")
