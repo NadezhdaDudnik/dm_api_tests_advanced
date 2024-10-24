@@ -1,4 +1,5 @@
 class Configuration:
+
     def __init__(self, host, headers: dict = None, disable_log: bool = True):
         self.host = host
         self.headers = headers
